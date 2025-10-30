@@ -22,7 +22,7 @@ O projeto atende a todos os requisitos do desafio:
 4.  **Rede Customizada:** Uma rede `bridge` customizada (`backend_net`) é criada para isolar a comunicação entre a API e o banco de dados.
 5.  **Variáveis de Ambiente:** Configurações sensíveis (usuário, senha e nome do banco) são gerenciadas através de um arquivo `.env` e injetadas nos containers pelo Docker Compose, evitando que senhas sejam expostas no código ou no `docker-compose.yml`.
 6.  **Segurança do DB (Usuário não-root):** O banco de dados é configurado para criar um usuário (`app_user`) e um banco (`minha_api_db`) específicos para a aplicação, em vez de usar o superusuário `postgres`.
-7.  **API com CRUD:** A aplicação FastAPI implementa endpoints de CRUD (Criar, Ler) para a entidade "Produto".
+7.  **API com CRUD:** A aplicação FastAPI implementa todos os endpoints de CRUD (Criar, Ler, Atualizar e Deletar) para a entidade "Produto".
 
 ---
 
@@ -83,23 +83,26 @@ Com os containers rodando, você pode testar a API. O FastAPI fornece uma interf
 
 1.  Abra seu navegador e acesse: **[http://localhost:8000/docs](http://localhost:8000/docs)**
 
-2.  **CRIAR um produto (POST):**
-    * Clique no endpoint `POST /produtos/`.
-    * Clique em "Try it out".
-    * Insira o seguinte JSON no "Request body":
-      ```json
-      {
-        "nome": "Produto de Teste",
-        "descricao": "Este é um teste"
-      }
-      ```
-    * Clique em "Execute". Você deve receber uma resposta `Code: 200` com o produto criado.
+2.  **CRIAR um produto (POST /produtos/):**
+    * Clique no endpoint, "Try it out".
+    * Insira o JSON: `{"nome": "Produto de Teste", "descricao": "Este é um teste"}`
+    * Clique "Execute". Você deve receber um `Code: 200`.
 
-3.  **LER os produtos (GET):**
-    * Clique no endpoint `GET /produtos/`.
-    * Clique em "Try it out" e depois em "Execute".
-    * Você deve receber uma resposta `Code: 200` com uma lista contendo o produto que acabou de criar.
+3.  **LER os produtos (GET /produtos/):**
+    * Clique no endpoint, "Try it out", "Execute".
+    * Você deve ver uma lista contendo o "Produto de Teste". Anote o `id` dele.
 
+4.  **ATUALIZAR um produto (PUT /produtos/{produto_id}):**
+    * Clique no endpoint, "Try it out".
+    * Coloque o `id` do produto que você criou (ex: `1`).
+    * Insira o JSON: `{"nome": "Produto ATUALIZADO", "descricao": "Descrição nova"}`
+    * Clique "Execute". Você deve receber um `Code: 200` com o produto atualizado.
+
+5.  **DELETAR um produto (DELETE /produtos/{produto_id}):**
+    * Clique no endpoint, "Try it out".
+    * Coloque o `id` do produto.
+    * Clique "Execute". Você deve receber um `Code: 200` com a mensagem "deletado com sucesso".
+    
 ### 4. Testar a Persistência (Volume)
 
 Para verificar se o volume está funcionando, vamos destruir os containers e subi-los novamente.
