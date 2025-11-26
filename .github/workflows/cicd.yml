@@ -64,3 +64,20 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/desafio-docker-fastapi:latest
             ${{ secrets.DOCKER_USERNAME }}/desafio-docker-fastapi:${{ github.sha }}
+
+
+  deploy:
+    name: Deploy no Servidor
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Executar Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            
