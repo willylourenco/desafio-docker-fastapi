@@ -1,3 +1,5 @@
+[![CI/CD Pipeline](https://github.com/willylourenco/desafio-docker-fastapi/actions/workflows/cicd.yml/badge.svg)](https://github.com/willylourenco/desafio-docker-fastapi/actions/workflows/cicd.yml)
+
 # Desafio Docker: Ambiente Multi-Container com FastAPI e PostgreSQL
 
 Este projeto implementa um ambiente de desenvolvimento completo utilizando Docker e Docker Compose, consistindo em uma API de CRUD (FastAPI em Python) conectada a um banco de dados PostgreSQL.
@@ -132,3 +134,22 @@ docker compose down
 # Parar E remover o volume de dados (apaga os dados do DB)
 docker compose down -v
 ```
+## 🚀 CI/CD e Deploy Automático
+
+Este projeto conta com um pipeline completo de Integração e Entrega Contínua (CI/CD) utilizando **GitHub Actions**.
+
+### O Pipeline (`.github/workflows/cicd.yml`)
+A cada `push` na branch `main`, o seguinte processo é disparado:
+
+1.  **Testes (CI):** O ambiente é preparado e os testes unitários (`pytest`) são executados.
+2.  **Build e Push (CD - Registry):** Se os testes passarem, a imagem Docker é construída e enviada para o Docker Hub com a tag `latest` e o hash do commit.
+3.  **Deploy (CD - Produção):** O GitHub Actions conecta via SSH no servidor VPS (DigitalOcean), baixa a nova imagem e reinicia os containers usando `docker compose`.
+
+### Configuração de Secrets
+Para que o pipeline funcione, as seguintes variáveis (Secrets) foram configuradas no repositório:
+
+* `DOCKER_USERNAME`: Usuário do Docker Hub.
+* `DOCKER_PASSWORD`: Token de acesso do Docker Hub.
+* `HOST`: Endereço IP do servidor de produção.
+* `USERNAME`: Usuário do sistema (root).
+* `SSH_PASSWORD`: Senha de acesso SSH ao servidor.
