@@ -50,7 +50,7 @@ jobs:
   # 3. PROVISIONAR INFRA (TERRAFORM)
   provision-infra:
     name: Provisionar Infraestrutura
-    needs: test # Pode rodar enquanto o Docker builda
+    needs: test 
     runs-on: ubuntu-latest
     
     # Define as saídas para usar no próximo job
@@ -72,7 +72,6 @@ jobs:
 
       - name: Terraform Apply
         working-directory: ./terraform
-        # Passamos o Token da DO via variável de ambiente TF_VAR_do_token
         env:
           TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
         run: terraform apply -auto-approve
@@ -81,21 +80,43 @@ jobs:
         id: get-ip
         working-directory: ./terraform
         run: |
-          
+          # Captura o IP cru e joga na saída do GitHub
+          IP=$(terraform output -raw droplet_ip)
+          echo "O IP capturado foi: $IP"
+          echo "ipv4=$IP" >> $GITHUB_OUTPUT
 
   # 4. DEPLOY (USANDO O IP DINÂMICO)
   deploy:
     name: Deploy no Servidor
-    needs: [build-and-push, provision-infra] # Espera o Build E o Servidor estarem prontos
+    needs: [build-and-push, provision-infra]
     runs-on: ubuntu-latest
     
     steps:
       - name: Executar Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          # AQUI ESTÁ O PULO DO GATO: Usamos o IP que veio do Terraform!
           host: ${{ needs.provision-infra.outputs.server_ip }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
+            # Espera segurança caso seja servidor novo
+            sleep 10
+            
+            # Lógica de clone ou update
+            if [ ! -d "desafio-docker-fastapi" ]; then
+              git clone https://github.com/${{ github.repository }}.git desafio-docker-fastapi
+            fi
+            
+            cd desafio-docker-fastapi
+            git pull origin main
+            
+            # Recria o .env básico
+            echo "DB_USER=app_user" > .env
+            echo "DB_PASS=app_secret_pass_123" >> .env
+            echo "DB_NAME=minha_api_db" >> .env
+
+            # Atualiza os containers
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker image prune -f
