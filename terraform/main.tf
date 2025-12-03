@@ -23,7 +23,7 @@ provider "digitalocean" {
 # 1. Recurso: Enviar sua chave SSH local para a DigitalOcean
 resource "digitalocean_ssh_key" "minha_chave" {
   name       = "chave-terraform-fastapi"
-  public_key = file("../chave_pem.pub") # Lê o arquivo que está na raiz do projeto
+  public_key = file("chave_pem.pub") # Agora lê da mesma pasta
 }
 
 # 2. Recurso: O Servidor (Droplet)
