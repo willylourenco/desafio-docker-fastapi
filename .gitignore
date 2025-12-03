@@ -4,3 +4,9 @@ __pycache__/
 *.pyc
 
 .dockerignore
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
