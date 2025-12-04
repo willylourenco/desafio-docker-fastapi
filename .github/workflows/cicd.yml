@@ -97,7 +97,7 @@ jobs:
         with:
           host: ${{ needs.provision-infra.outputs.server_ip }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          password: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
             # Espera segurança caso seja servidor novo
