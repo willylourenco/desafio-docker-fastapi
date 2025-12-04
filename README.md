@@ -153,3 +153,21 @@ Para que o pipeline funcione, as seguintes variáveis (Secrets) foram configurad
 * `HOST`: Endereço IP do servidor de produção.
 * `USERNAME`: Usuário do sistema (root).
 * `SSH_PASSWORD`: Senha de acesso SSH ao servidor.
+
+## Infraestrutura como Código (IaC) com Terraform
+
+Além do CI/CD da aplicação, este projeto utiliza **Terraform** para gerenciar a infraestrutura na DigitalOcean.
+
+### Como funciona
+O pipeline possui um job `provision-infra` que roda antes do deploy. Ele utiliza o Terraform Cloud para manter o estado da infraestrutura e executa os seguintes passos:
+
+1.  Verifica se o Droplet (servidor) existe.
+2.  Se não existir, cria um novo Droplet Ubuntu.
+3.  Executa um script `cloud-init` que instala o Docker e Docker Compose automaticamente.
+4.  Captura o IP público do servidor criado e o passa para o job de Deploy.
+
+### Segredos de Infraestrutura
+Foram configurados os seguintes Secrets adicionais no GitHub:
+* `TF_API_TOKEN`: Token de acesso ao Terraform Cloud.
+* `DO_TOKEN`: Token da DigitalOcean com permissão de escrita.
+* `SSH_KEY`: Chave SSH Privada para acesso ao servidor provisionado.
